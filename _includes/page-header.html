@@ -1,0 +1,17 @@
+<div id="internal-metadata" class="document-information">
+	<dl id="identifiers"> <dt class="label-stream">Group:</dt>
+		<dd class="stream">{{ site.data.specs[page.key].group }}</dd> <dt class="label-rfc">Id:</dt>
+		<dd class="rfc"><a href="{{ page.github_url }}" class="eref">{{ page.id }}</a></dd>
+		<dd class="category">Standards Track</dd> <dt class="label-published">Published:</dt>
+		<dd class="published">
+			<time datetime="2021-01" class="published">{% if page.published %}{{ page.published }}{% else %}{{ site.time | date: '%B %Y' }}{% endif %}</time>
+		</dd> 
+		<dt class="label-edit">Edit:</dt><dd>
+		<a href="https://github.com/{{ site.data.specs[page.key].github_repo }}/edit/master/{{ page.spec }}" target="_blank" class="eref">GitHub <i class="fa fa-external-link" aria-hidden="true"></i>
+		<a href="https://github.com/{{ site.data.specs[page.key].github_repo }}/issues/" target="_blank" class="eref">New Issue <i class="fa fa-external-link" aria-hidden="true"></i>			
+		</a>
+               <dd></dd>
+		<dt class="label-stars">Stars:</dt><dd id="stars"></dd>
+		<dt class="label-forks">Forks:</dt><dd id="forks"></dd> 		
+	</dl>
+</div>

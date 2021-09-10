@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" class="RFC">
+{% include head.html %}
+{% include google-analytics.html %}
+<body>
+
+<div id="goback"><a href="{{ site.baseurl }}/">< Back</a>
+<ul>
+{% for link in site.data.specs[page.key].pages %}
+<li class="specnav"><a class="speclink" href="{{ site.baseurl }}/{{ link }}">{{ link | replace: "/", " " }}</a></li>{% endfor %}
+</ul>
+</div>
+
+{% include page-header.html %}
+{% include table-of-contents.html %}
+{{ content }}
+{% include footer.html %}
+{% include scripts.html %}
+</body>
+</html>

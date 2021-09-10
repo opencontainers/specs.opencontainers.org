@@ -1,0 +1,137 @@
+---
+layout: default
+---
+
+<h1 style="margin-top:40px" id="title">{{ page.title }}</h1>
+
+{{ content }}
+
+<div id="content" style="display:none"></div>
+
+<p style="padding-top:30px">This content is served from <a id="from_url" href="https://github.com/{{ site.data.specs[page.key].github_repo }}/blob/{{ site.data.specs[page.key].default_version }}/{{ page.spec }}" target="_blank">{{ site.data.specs[page.key].github_repo }}</a> on GitHub. You can
+make contributions or suggestions for changes there.
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="{{ site.baseurl }}/assets/js/showdown.min.js"></script>
+<script>
+function getImages(string) {
+  const imgRex = /<img.*?src="(.*?)"[^>]+>/g;
+  const images = [];
+    let img;
+    while ((img = imgRex.exec(string))) {
+     	images.push(img[1]);
+    }
+  return images;
+}
+
+function getLinks(string) {
+  const imgRex = /href="(.*?)"/g;
+  const links = [];
+    let img;
+    while ((img = imgRex.exec(string))) {
+     	links.push(img[1]);
+    }
+  return links;
+}
+
+function basename(str) {
+   var base = new String(str).substring(str.lastIndexOf('/') + 1); 
+    if(base.lastIndexOf(".") != -1)       
+        base = base.substring(0, base.lastIndexOf("."));
+   return base;
+}
+
+
+function slugify(text) {
+    return text
+        .toLowerCase()
+        .replace(/ /g,'-')
+        .replace(/[^\w-]+/g,'')
+        ;
+}
+
+function getParameterByName(name, url = window.location.href) {
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+$(document).ready(function(){
+
+    // Version (GitHub reference) comes from the url
+    window.version = getParameterByName('v') || "{{ site.data.specs[page.key].default_version }}";
+
+    // Serving content from this url
+    var from_url = "https://github.com/{{ site.data.specs[page.key].github_repo }}/blob/" + window.version + "/{{ page.spec }}"
+    $("#from_url").attr("href", from_url);
+
+    // Get GitHub stars and forks for the repo
+    var url = "https://api.github.com/search/repositories?q={{ site.data.specs[page.key].github_repo }}";
+    fetch(url, { 
+        headers: {"Accept":"application/vnd.github.preview"}
+    }).then(function(e) {
+      return e.json()
+    }).then(function(r) {
+       console.log(r.items[0])
+       stars = r.items[0]['stargazers_count']
+       forks = r.items[0]['forks_count']
+       $('#stars').text(stars)
+       $('#forks').text(forks)
+    });
+
+    url = "https://raw.githubusercontent.com/{{ site.data.specs[page.key].github_repo }}/" + window.version +  "/{{ page.spec }}"
+    $.get(url, function(data) {
+        var converter = new showdown.Converter({tables: true}),
+                 html = converter.makeHtml(data);
+
+        // Find all relative markdown links and replace with pages
+        var links = getLinks(html)        
+        for (var i = 0; i < links.length; i++) {
+            link = links[i];
+            if (link.endsWith(".md") && !link.startsWith("http")) {
+            
+                // Logging here so we can see the pages that should be added
+                console.log(link);
+                html = html.replace(link, {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version);
+            }
+        }
+
+        // Relative images need to be replaced by a raw GitHub url
+        // We will need to do this for other relative paths too
+        var images = getImages(html)
+        for (var i = 0; i < images.length; i++) {
+            image = images[i];
+            if (!image.startsWith("http")) {
+                html = html.replace(image, "https://raw.githubusercontent.com/{{ site.data.specs[page.key].github_repo }}/" + window.version + "/" + image);
+            }            
+        }
+                
+        $('#content').html(html)
+        $('#content').show();
+
+
+        // Ensure speclinks have versions
+        $(".speclink").each(function(e, i) {
+            $(i).attr('href', $(i).attr('href') + "?v=" + window.version);
+        })
+
+
+        // Add ids to all elements without them
+        counter = 0;
+        $("#content>*").each(function() {
+
+            if ($(this).prop("tagName").startsWith("H")) {
+                this.id = slugify($(this).text())
+            } else {
+                this.id = "{{ page.id }}-" + counter;
+                counter++;
+            }
+            $(this).append("<a href='#" + this.id + "' class='pilcrow'>¶</a>")
+        });
+    });
+
+});
+</script>

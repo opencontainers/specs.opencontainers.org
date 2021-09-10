@@ -1,0 +1,58 @@
+# This file holds shared metadata for a directory of specs
+image-spec:
+  name: Image Spec
+  group: Open Containers Initiative (OCI)
+  github_repo: opencontainers/image-spec
+  default_version: v1.0.1
+  versions:
+    - v1.0.1
+
+  # Courtesy list of pages relative to site root to link
+  pages:
+   - image-spec/
+   - image-spec/annotations/
+   - image-spec/config/
+   - image-spec/considerations/
+   - image-spec/conversions/
+   - image-spec/descriptor/
+   - image-spec/image-index/
+   - image-spec/image-layout/
+   - image-spec/layer/
+   - image-spec/manifest/
+   - image-spec/media-types/
+ 
+
+distribution-spec:
+  name: Distribution Spec
+  group: Open Containers Initiative (OCI)
+  github_repo: opencontainers/distribution-spec
+  default_version: v1.0.0
+  versions:
+    - v1.0.0
+
+  pages:
+   - distribution-spec/
+   - distribution-spec/conformance/README/
+   - distribution-spec/content-negotiation/
+   - distribution-spec/detail/
+   
+runtime-spec:
+  name: Runtime Spec
+  group: Open Containers Initiative (OCI)
+  github_repo: opencontainers/runtime-spec
+  default_version: v1.0.2
+  versions:
+   - v1.0.2
+
+  pages:
+   - runtime-spec/
+   - runtime-spec/bundle/
+   - runtime-spec/config-linux/
+   - runtime-spec/config/
+   - runtime-spec/config-solaris/
+   - runtime-spec/config-vm/
+   - runtime-spec/config-windows/
+   - runtime-spec/glossary/
+   - runtime-spec/principles/
+   - runtime-spec/runtime-linux/
+   - runtime-spec/runtime/

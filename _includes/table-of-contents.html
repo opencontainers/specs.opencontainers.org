@@ -1,0 +1,68 @@
+<div id="toc">
+   <section id="section-toc.1">
+      <a href="#" onclick="scroll(0,0)" class="toplink">▲</a>
+      <h2 id="name-table-of-contents">
+         <a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+      </h2>
+      <nav class="toc">
+         <ul class="ulEmpty compact toc">
+         </ul>
+      </nav>
+   </section>
+</div>
+
+<script
+  src="{{ site.baseurl }}/assets/js/jquery-3.3.1/jquery-3.3.1.min.js"
+  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+  crossorigin="anonymous"></script>
+<script>
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+$(document).ready(function() {
+
+    async function populate() {
+        await new Promise(r => setTimeout(r, 500));
+        var toc = $('nav.toc');
+
+        // Most pages start with h1, but some with h2
+        sections = $('#content>h1');
+        if (sections.length == 0) {
+            sections = $('#content>h2');   
+        }
+        var counter = 1;
+        $.each(sections, function(idx, v) {
+            section = $(v);
+            var tagName = section[0].tagName
+            var div_id = $(section).attr('id');
+            var div_text = section.text().split('¶')[0];
+            var parent = $("#" + div_id)
+            var content = '<li class="ulEmpty compact toc" id="link_' + div_id + '"><p id="plink_' + div_id + '"><a href="#' + div_id + '" class="xref">' + counter + '</a>.<a href="#' + div_id + '">' + div_text + '</a><a href="' + div_id + '" class="pilcrow">¶</a></p>';
+            $(toc).append(content);
+
+            // Add section code to subnavigation
+            var children = $('<ul class="ulEmpty compact toc"></ul>')
+            var contenders = $("#" + div_id).nextUntil("h1");
+ 
+            child_counter = 1;
+            $.each(contenders, function(idx, contender){
+
+               counter_str = counter + "." + child_counter;
+               // Only go as deep as h2 and h3
+               if($(contender).is('h2') || $(contender).is('h3') || $(contender).is('h4') || $(contender).is('h5') || $(contender).is('h6') || $(contender).is('h7')) {
+                   var contender_id = $(contender).attr('id');
+                   var contender_text = $(contender).text().split('¶')[0];
+                   var content = '<li class="ulEmpty compact toc"><p class="keepWithNext"><a href="#' + contender_id + '" class="xref">'+ counter_str + '</a>. <a href="#' + contender_id + '">' + contender_text +'</a></p></li>';
+                   children.append(content);
+                   child_counter += 1;
+                }
+             })
+             $("#link_" + div_id).append(children);
+             counter +=1;
+        });
+    }
+    populate();
+});
+</script>
