@@ -1,0 +1,1 @@
+AT+CWJAP="your_ssid","your_pwd"
