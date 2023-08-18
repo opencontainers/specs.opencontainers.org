@@ -25,11 +25,18 @@ function getImages(string) {
 }
 
 function getLinks(string) {
-  const imgRex = /href="(.*?)"/g;
+  // No longer used - first strategy to just get link content
+  //const imgRex = /href="(.*?)"/g;
+  const imgRex = /<\/?[a][^>](.*?)>(.*?)<\/?[a]>/ig
+  // This generates a tuple:
+  // '<a href="config.md">Configuration</a>', 'href="config.md"', "Configuration" ]
   const links = [];
     let img;
-    while ((img = imgRex.exec(string))) {
-     	links.push(img[1]);
+    while ((img = imgRex.exec(string))) {        
+        // Parse the second component without href and add to array 
+        cleaned = img[1].replace("href=", "").replaceAll('"', '')
+        img.push(cleaned)
+     	links.push(img);
     }
   return links;
 }
@@ -90,12 +97,20 @@ $(document).ready(function(){
         // Find all relative markdown links and replace with pages
         var links = getLinks(html)        
         for (var i = 0; i < links.length; i++) {
-            link = links[i];
-            if (link.endsWith(".md") && !link.startsWith("http")) {
             
-                // Logging here so we can see the pages that should be added
-                console.log(link);
-                html = html.replace(link, {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version);
+            // Full link text to replace
+            linktext = links[i][0]           
+            linktitle = links[i][2] 
+            link = links[i][3]
+            
+            if (link.endsWith(".md") && !link.startsWith("http")) {
+
+                // Prepare a variant of the link to sub in
+                linkUpdated = {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version                
+                // assemble the new link in entirety
+                linkUpdated = "<a href=\"" + linkUpdated + "\">" + linktitle + "</a>"
+                console.log("Replacing " + linktext + " with " + linkUpdated)
+                html = html.replace(linktext, linkUpdated)                
             }
         }
 
