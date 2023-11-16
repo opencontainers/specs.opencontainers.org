@@ -128,10 +128,24 @@ body {
   transition: 0.375s ease;
   text-align: center;
 }
-</style>
 
+.spec-details {
+  display: block;
+  font-weight: normal;
+  font-style: italic;
+  display: block;
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+</style>
 <fieldset class="checkbox-group" style="border:none">
-  <legend class="checkbox-group-legend">OpenContainers Specifications</legend>
+  <legend class="checkbox-group-legend">
+    OpenContainers Specifications
+    <span class="spec-details">
+      Please see <a target="_blank" href="https://oci-playground.github.io/specs-latest/">this page</a>
+      for more details on the latest spec releases.
+    </span>
+  </legend>
   {% for spec in site.data.specs %}
   <div class="checkbox" id="spec-{{ spec[0] }}">
     <label class="checkbox-wrapper">
