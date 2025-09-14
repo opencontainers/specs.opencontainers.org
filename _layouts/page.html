@@ -157,6 +157,14 @@ $(document).ready(function(){
             $(this).append("<a href='#" + this.id + "' class='pilcrow'>¶</a>")
         });
 
+        // Scroll to anchor
+        if (window.location.hash) {
+            const targetElement = document.querySelector(window.location.hash);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
     });
 
 });
