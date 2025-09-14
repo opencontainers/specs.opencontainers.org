@@ -102,11 +102,21 @@ $(document).ready(function(){
             linktext = links[i][0]           
             linktitle = links[i][2] 
             link = links[i][3]
-            
+
+            // Links may have anchors
+            parsed_link = link.split('#', 2)
+            link = parsed_link[0]
+            anchor = parsed_link[1]
+
             if (link.endsWith(".md") && !link.startsWith("http")) {
 
                 // Prepare a variant of the link to sub in
-                linkUpdated = {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version                
+                linkUpdated = {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version
+
+                if (anchor) {
+                    linkUpdated = linkUpdated + '#' + anchor
+                }
+
                 // assemble the new link in entirety
                 linkUpdated = "<a href=\"" + linkUpdated + "\">" + linktitle + "</a>"
                 console.log("Replacing " + linktext + " with " + linkUpdated)
@@ -146,6 +156,7 @@ $(document).ready(function(){
             }
             $(this).append("<a href='#" + this.id + "' class='pilcrow'>¶</a>")
         });
+
     });
 
 });
