@@ -3,7 +3,7 @@ services:
   site:
     container_name: rfc-jekyll
     command: jekyll serve --watch --drafts
-    image: jekyll/jekyll:3.8
+    image: jekyll/jekyll:4.2.2
     volumes: 
       - "./:/srv/jekyll"
       - "./vendor/bundle:/usr/local/bundle"
