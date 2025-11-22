@@ -32,8 +32,8 @@ function getLinks(string) {
   // '<a href="config.md">Configuration</a>', 'href="config.md"', "Configuration" ]
   const links = [];
     let img;
-    while ((img = imgRex.exec(string))) {        
-        // Parse the second component without href and add to array 
+    while ((img = imgRex.exec(string))) {
+        // Parse the second component without href and add to array
         cleaned = img[1].replace("href=", "").replaceAll('"', '')
         img.push(cleaned)
      	links.push(img);
@@ -42,8 +42,8 @@ function getLinks(string) {
 }
 
 function basename(str) {
-   var base = new String(str).substring(str.lastIndexOf('/') + 1); 
-    if(base.lastIndexOf(".") != -1)       
+   var base = new String(str).substring(str.lastIndexOf('/') + 1);
+    if(base.lastIndexOf(".") != -1)
         base = base.substring(0, base.lastIndexOf("."));
    return base;
 }
@@ -77,7 +77,7 @@ $(document).ready(function(){
 
     // Get GitHub stars and forks for the repo
     var url = "https://api.github.com/search/repositories?q={{ site.data.specs[page.key].github_repo }}";
-    fetch(url, { 
+    fetch(url, {
         headers: {"Accept":"application/vnd.github.preview"}
     }).then(function(e) {
       return e.json()
@@ -95,22 +95,32 @@ $(document).ready(function(){
                  html = converter.makeHtml(data);
 
         // Find all relative markdown links and replace with pages
-        var links = getLinks(html)        
+        var links = getLinks(html)
         for (var i = 0; i < links.length; i++) {
-            
+
             // Full link text to replace
-            linktext = links[i][0]           
-            linktitle = links[i][2] 
+            linktext = links[i][0]
+            linktitle = links[i][2]
             link = links[i][3]
-            
+
+            // Links may have anchors
+            parsed_link = link.split('#', 2)
+            link = parsed_link[0]
+            anchor = parsed_link[1]
+
             if (link.endsWith(".md") && !link.startsWith("http")) {
 
                 // Prepare a variant of the link to sub in
-                linkUpdated = {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version                
+                linkUpdated = {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version
+
+                if (anchor) {
+                    linkUpdated = linkUpdated + '#' + anchor
+                }
+
                 // assemble the new link in entirety
                 linkUpdated = "<a href=\"" + linkUpdated + "\">" + linktitle + "</a>"
                 console.log("Replacing " + linktext + " with " + linkUpdated)
-                html = html.replace(linktext, linkUpdated)                
+                html = html.replace(linktext, linkUpdated)
             }
         }
 
@@ -121,9 +131,9 @@ $(document).ready(function(){
             image = images[i];
             if (!image.startsWith("http")) {
                 html = html.replace(image, "https://raw.githubusercontent.com/{{ site.data.specs[page.key].github_repo }}/" + window.version + "/" + image);
-            }            
+            }
         }
-                
+
         $('#content').html(html)
         $('#content').show();
 
@@ -146,6 +156,15 @@ $(document).ready(function(){
             }
             $(this).append("<a href='#" + this.id + "' class='pilcrow'>¶</a>")
         });
+
+        // Scroll to anchor
+        if (window.location.hash) {
+            const targetElement = document.querySelector(window.location.hash);
+            if (targetElement) {
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
     });
 
 });
