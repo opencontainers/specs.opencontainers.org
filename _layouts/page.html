@@ -66,6 +66,20 @@ function getParameterByName(name, url = window.location.href) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+function scrollToCurrentHash() {
+    if (!location.hash) return;
+
+    let id = location.hash.slice(1);
+
+    try {
+        id = decodeURIComponent(id);
+    } catch {
+        // Keep the original fragment if decoding fails
+    }
+
+    document.getElementById(id)?.scrollIntoView();
+}
+
 $(document).ready(function(){
 
     // Version (GitHub reference) comes from the url
@@ -167,6 +181,8 @@ $(document).ready(function(){
             }
             $(this).append("<a href='#" + this.id + "' class='pilcrow'>¶</a>")
         });
+
+        scrollToCurrentHash();
     });
 
 });
