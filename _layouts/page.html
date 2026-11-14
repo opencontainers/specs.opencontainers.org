@@ -66,6 +66,20 @@ function getParameterByName(name, url = window.location.href) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
+function scrollToCurrentHash() {
+    if (!location.hash) return;
+
+    let id = location.hash.slice(1);
+
+    try {
+        id = decodeURIComponent(id);
+    } catch {
+        // Keep the original fragment if decoding fails
+    }
+
+    document.getElementById(id)?.scrollIntoView();
+}
+
 $(document).ready(function(){
 
     // Version (GitHub reference) comes from the url
@@ -94,19 +108,40 @@ $(document).ready(function(){
         var converter = new showdown.Converter({tables: true}),
                  html = converter.makeHtml(data);
 
+        var sourceDocumentUrl = new URL(
+            "/" + {{ page.spec | jsonify }},
+            window.location.origin
+        );
+
         // Find all relative markdown links and replace with pages
         var links = getLinks(html)        
         for (var i = 0; i < links.length; i++) {
             
             // Full link text to replace
-            linktext = links[i][0]           
-            linktitle = links[i][2] 
-            link = links[i][3]
-            
-            if (link.endsWith(".md") && !link.startsWith("http")) {
+            var linktext = links[i][0];
+            var linktitle = links[i][2];
+            var link = links[i][3];
+            var sourceUrl = new URL(link, sourceDocumentUrl);
+            var isInternal = sourceUrl.origin === sourceDocumentUrl.origin;
+            var linkPath = link.split(/[?#]/, 1)[0];
+
+            if (isInternal && linkPath.endsWith(".md")) {
 
                 // Prepare a variant of the link to sub in
-                linkUpdated = {% if page.parent %}"{{ site.baseurl }}/{{ page.parent }}/" + {% endif %} basename(link).replace(".md") + "/?v=" + window.version                
+                var sourceLinkPath = sourceUrl.pathname.substring(1);
+                var targetPath;
+
+                // root_spec has no subdir
+                if (sourceLinkPath === "{{ site.data.specs[page.key].root_spec }}") {
+                    targetPath = "{{ site.baseurl }}/{{ page.key }}/";
+                } else {
+                    targetPath = "{{ site.baseurl }}/{{ page.key }}/"
+                        + sourceLinkPath.slice(0, -3) + "/";
+                }
+
+                var linkUpdated = targetPath
+                    + "?v=" + encodeURIComponent(window.version)
+                    + sourceUrl.hash;
                 // assemble the new link in entirety
                 linkUpdated = "<a href=\"" + linkUpdated + "\">" + linktitle + "</a>"
                 console.log("Replacing " + linktext + " with " + linkUpdated)
@@ -146,6 +181,8 @@ $(document).ready(function(){
             }
             $(this).append("<a href='#" + this.id + "' class='pilcrow'>¶</a>")
         });
+
+        scrollToCurrentHash();
     });
 
 });

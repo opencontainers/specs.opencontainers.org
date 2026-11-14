@@ -3,6 +3,7 @@ image-spec:
   name: Image Spec
   group: Open Containers Initiative (OCI)
   github_repo: opencontainers/image-spec
+  root_spec: spec.md
   default_version: v1.1.1
   versions:
     - v1.1.1
@@ -26,6 +27,7 @@ distribution-spec:
   name: Distribution Spec
   group: Open Containers Initiative (OCI)
   github_repo: opencontainers/distribution-spec
+  root_spec: spec.md
   default_version: v1.1.1
   versions:
     - v1.1.1
@@ -40,6 +42,7 @@ runtime-spec:
   name: Runtime Spec
   group: Open Containers Initiative (OCI)
   github_repo: opencontainers/runtime-spec
+  root_spec: spec.md
   default_version: v1.3.0
   versions:
    - v1.3.0
